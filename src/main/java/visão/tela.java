@@ -8,10 +8,23 @@ package visão;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javafx.scene.input.KeyCode.T;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
 import javax.swing.JOptionPane;
+import modelo.CriaSVG;
+import modelo.SVGFactory;
+import modelo.ViewBox;
 
 /**
  *
@@ -19,10 +32,15 @@ import javax.swing.JOptionPane;
  */
 public class tela extends javax.swing.JFrame {
 
-    /**
-     * Creates new form tela
-     */
+     private CriaSVG criaSVG;
     public tela() {
+        try {
+            criaSVG = new CriaSVG();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
         initComponents();
 
     }
@@ -65,9 +83,9 @@ public class tela extends javax.swing.JFrame {
         jTextField9 = new javax.swing.JTextField();
         jTextField10 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
         jTextField11 = new javax.swing.JTextField();
         jTextField12 = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
 
         jFormattedTextField1.setText("jFormattedTextField1");
 
@@ -195,19 +213,6 @@ public class tela extends javax.swing.JFrame {
         });
         jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, 100, 30));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 290, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 270, Short.MAX_VALUE)
-        );
-
-        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(35, 307, 290, 270));
-
         jTextField11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField11ActionPerformed(evt);
@@ -221,6 +226,10 @@ public class tela extends javax.swing.JFrame {
             }
         });
         jPanel2.add(jTextField12, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, 130, 50));
+
+        jLabel16.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel16.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 320, 370));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -239,18 +248,18 @@ public class tela extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addGap(902, 902, 902))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 591, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 620, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
-                .addGap(57, 57, 57)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1462, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel15)
@@ -274,9 +283,37 @@ public class tela extends javax.swing.JFrame {
             Geometry geometria1 = reader.read(jTextField11.getText());
             Geometry geometria2 = reader.read(jTextField12.getText());
             CompararGeometrias(geometria1, geometria2);
+            ViewBox viewBox = new ViewBox(geometria1,geometria2);
+            String viewbox = viewBox.getViewBox();
+            String coordenadas1 = SVGFactory.getSvg(geometria1);
+            String coordenadas2 = SVGFactory.getSvg(geometria2);
+            criaSVG.criaArquivo(viewbox, coordenadas1, coordenadas2);
+            
+             try {JPEGTranscoder t = new JPEGTranscoder();
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
+                    new Float(.8));
 
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(null, "Ocorreu um erro,verifique se a geometria está correta");
+            String svgURI = new File("Saida.svg").toURI().toURL().toString();
+            TranscoderInput input = new TranscoderInput(svgURI);
+
+            OutputStream ostream = new FileOutputStream("Saida.jpg");
+            TranscoderOutput output = new TranscoderOutput(ostream);
+         
+           
+                t.transcode(input, output);
+                jLabel16.setIcon(new ImageIcon(ImageIO.read(new File("Saida.jpg"))));
+
+            ostream.flush();
+            ostream.close();
+            } catch (TranscoderException ex) {
+                Logger.getLogger(tela.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            
+            }  catch (ParseException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
 
 
@@ -339,6 +376,7 @@ public class tela extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -348,7 +386,6 @@ public class tela extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
