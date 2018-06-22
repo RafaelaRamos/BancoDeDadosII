@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package modelo;
+package controle;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -13,6 +13,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Cliente
  */
 public class ViewBox {
+
     private Geometry geom1;
     private Geometry geom2;
 
@@ -26,17 +27,17 @@ public class ViewBox {
         Geometry envelope = uniao.getEnvelope();
 
         StringBuilder builder = new StringBuilder();
-        
+
         builder.append(getXMin(envelope));
         builder.append(" ");
         builder.append(getYMin(envelope));
         builder.append(" ");
-        builder.append(getXMax(envelope)-getXMin(envelope));
+        builder.append(getXMax(envelope) - getXMin(envelope));
         builder.append(" ");
-        builder.append(getYMax(envelope)-getYMin(envelope));
-        
+        builder.append(getYMax(envelope) - getYMin(envelope));
+
         return builder.toString();
-        
+
     }
 
     private double getXMin(Geometry envelope) {
@@ -92,4 +93,3 @@ public class ViewBox {
     }
 
 }
-

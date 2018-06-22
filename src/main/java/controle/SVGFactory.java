@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package modelo;
+package controle;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -13,6 +13,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Cliente
  */
 public class SVGFactory {
+
     public static String getSvg(Geometry geometria) {
         StringBuilder svg = new StringBuilder();
 
@@ -39,4 +40,3 @@ public class SVGFactory {
     }
 
 }
-

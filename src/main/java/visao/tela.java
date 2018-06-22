@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package visão;
+package visao;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -22,9 +22,9 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import javax.swing.JOptionPane;
-import modelo.CriaSVG;
-import modelo.SVGFactory;
-import modelo.ViewBox;
+import controle.CriaSVG;
+import controle.SVGFactory;
+import controle.ViewBox;
 
 /**
  *
@@ -32,7 +32,8 @@ import modelo.ViewBox;
  */
 public class tela extends javax.swing.JFrame {
 
-     private CriaSVG criaSVG;
+    private CriaSVG criaSVG;
+
     public tela() {
         try {
             criaSVG = new CriaSVG();
@@ -243,7 +244,7 @@ public class tela extends javax.swing.JFrame {
         jLabel16.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, 340, 360));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 591, 620));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 591, 640));
         jPanel2.getAccessibleContext().setAccessibleParent(jPanel2);
 
         getAccessibleContext().setAccessibleParent(jPanel2);
@@ -263,39 +264,37 @@ public class tela extends javax.swing.JFrame {
             Geometry geometria1 = reader.read(jTextField11.getText());
             Geometry geometria2 = reader.read(jTextField12.getText());
             CompararGeometrias(geometria1, geometria2);
-            ViewBox viewBox = new ViewBox(geometria1,geometria2);
+            ViewBox viewBox = new ViewBox(geometria1, geometria2);
             String viewbox = viewBox.getViewBox();
             String coordenadas1 = SVGFactory.getSvg(geometria1);
             String coordenadas2 = SVGFactory.getSvg(geometria2);
             criaSVG.criaArquivo(viewbox, coordenadas1, coordenadas2);
-            
-             try {JPEGTranscoder t = new JPEGTranscoder();
-            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
-                    new Float(.8));
 
-            String svgURI = new File("Saida.svg").toURI().toURL().toString();
-            TranscoderInput input = new TranscoderInput(svgURI);
+            try {
+                JPEGTranscoder t = new JPEGTranscoder();
+                t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
+                        new Float(.8));
 
-            OutputStream ostream = new FileOutputStream("Saida.jpg");
-            TranscoderOutput output = new TranscoderOutput(ostream);
-         
-           
+                String svgURI = new File("Saida.svg").toURI().toURL().toString();
+                TranscoderInput input = new TranscoderInput(svgURI);
+
+                OutputStream ostream = new FileOutputStream("Saida.jpg");
+                TranscoderOutput output = new TranscoderOutput(ostream);
+
                 t.transcode(input, output);
                 jLabel16.setIcon(new ImageIcon(ImageIO.read(new File("Saida.jpg"))));
 
-            ostream.flush();
-            ostream.close();
+                ostream.flush();
+                ostream.close();
             } catch (TranscoderException ex) {
                 Logger.getLogger(tela.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            
-            }  catch (ParseException ex) {
+        } catch (ParseException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -396,7 +395,7 @@ public class tela extends javax.swing.JFrame {
         }
 
         if (geometria1.disjoint(geometria2) == true) {
-            jTextField2.setForeground(new java.awt.Color(50, 205 ,50));
+            jTextField2.setForeground(new java.awt.Color(50, 205, 50));
             jTextField2.setText("T");
         } else {
             jTextField2.setForeground(new java.awt.Color(255, 0, 0));
@@ -410,35 +409,35 @@ public class tela extends javax.swing.JFrame {
             jTextField3.setText("F");
         }
         if (geometria1.touches(geometria2) == true) {
-            jTextField4.setForeground(new java.awt.Color(50, 205 ,50));
+            jTextField4.setForeground(new java.awt.Color(50, 205, 50));
             jTextField4.setText("T");
         } else {
             jTextField4.setForeground(new java.awt.Color(255, 0, 0));
             jTextField4.setText("F");
         }
         if (geometria1.within(geometria2) == true) {
-            jTextField5.setForeground(new java.awt.Color(50 ,205 ,50));
+            jTextField5.setForeground(new java.awt.Color(50, 205, 50));
             jTextField5.setText("T");
         } else {
             jTextField5.setForeground(new java.awt.Color(255, 0, 0));
             jTextField5.setText("F");
         }
         if (geometria1.crosses(geometria2) == true) {
-            jTextField6.setForeground(new java.awt.Color(50 ,205, 50));
+            jTextField6.setForeground(new java.awt.Color(50, 205, 50));
             jTextField6.setText("T");
         } else {
             jTextField6.setForeground(new java.awt.Color(255, 0, 0));
             jTextField6.setText("F");
         }
         if (geometria1.contains(geometria2) == true) {
-            jTextField7.setForeground(new java.awt.Color(50, 205 ,50));
+            jTextField7.setForeground(new java.awt.Color(50, 205, 50));
             jTextField7.setText("T");
         } else {
             jTextField7.setForeground(new java.awt.Color(255, 0, 0));
             jTextField7.setText("F");
         }
         if (geometria1.overlaps(geometria2) == true) {
-            jTextField8.setForeground(new java.awt.Color(50 ,205 ,50));
+            jTextField8.setForeground(new java.awt.Color(50, 205, 50));
             jTextField8.setText("T");
         } else {
             jTextField8.setForeground(new java.awt.Color(255, 0, 0));
